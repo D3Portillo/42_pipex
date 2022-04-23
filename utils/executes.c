@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   excutes.c                                          :+:      :+:    :+:   */
+/*   executes.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: dcerrito <dcerrito@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/22 05:25:32 by dcerrito          #+#    #+#             */
-/*   Updated: 2022/04/22 05:36:11 by dcerrito         ###   ########.fr       */
+/*   Updated: 2022/04/23 15:11:36 by dcerrito         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@ static char	*get_path(char *program, char **environ)
 	int		i;
 
 	i = -1;
+	parsed_env = ((full_path = (root_path = NULL)), NULL);
 	while (program && environ[++i])
 	{
 		if (ft_strnstr(environ[i], "PATH=", 5))
@@ -31,7 +32,7 @@ static char	*get_path(char *program, char **environ)
 				root_path = ft_strjoin(parsed_env[i], "/");
 				full_path = ft_strjoin(root_path, program);
 				if (!root_path || !full_path)
-					break ;
+					return (free_all(3, parsed_env, root_path, full_path));
 				if (access(full_path, F_OK) == F_OK)
 					return (free_all(2, parsed_env, root_path), full_path);
 			}
