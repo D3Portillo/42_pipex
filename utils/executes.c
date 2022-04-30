@@ -6,7 +6,7 @@
 /*   By: dcerrito <dcerrito@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/22 05:25:32 by dcerrito          #+#    #+#             */
-/*   Updated: 2022/04/23 15:11:36 by dcerrito         ###   ########.fr       */
+/*   Updated: 2022/04/30 22:48:26 by dcerrito         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,31 +14,31 @@
 
 static char	*get_path(char *program, char **environ)
 {
-	char	**parsed_env;
+	char	**paths;
 	char	*full_path;
 	char	*root_path;
 	int		i;
 
 	i = -1;
-	parsed_env = ((full_path = (root_path = NULL)), NULL);
+	paths = ((full_path = (root_path = NULL)), NULL);
 	while (program && environ[++i])
 	{
 		if (ft_strnstr(environ[i], "PATH=", 5))
 		{
-			parsed_env = ft_split(&environ[i][5], ':');
+			paths = ft_split(&environ[i][5], ':');
 			i = -1;
-			while (parsed_env && parsed_env[++i])
+			while (free_all(2, root_path, full_path), paths)
 			{
-				root_path = ft_strjoin(parsed_env[i], "/");
+				root_path = ft_strjoin(paths[++i], "/");
 				full_path = ft_strjoin(root_path, program);
 				if (!root_path || !full_path)
-					return (free_all(3, parsed_env, root_path, full_path));
+					return (free_all(3, paths, root_path, full_path));
 				if (access(full_path, F_OK) == F_OK)
-					return (free_all(2, parsed_env, root_path), full_path);
+					return (free_all(2, paths, root_path), full_path);
 			}
 		}
 	}
-	return (free_all(3, parsed_env, root_path, full_path));
+	return (NULL);
 }
 
 int	executes(char *arg, char **environ)
