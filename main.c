@@ -6,7 +6,7 @@
 /*   By: dcerrito <dcerrito@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/18 17:15:34 by dcerrito          #+#    #+#             */
-/*   Updated: 2022/04/22 06:57:30 by dcerrito         ###   ########.fr       */
+/*   Updated: 2022/04/30 22:57:26 by dcerrito         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@ static int	fork_and_run(int fd[2], int stdin, int stdout, char *command)
 		close(fd[0]);
 		close(fd[1]);
 		if (executes(command, environ) < 0)
-			werror("Couldn't find command");
+			return (werror("Couldn't find command"));
 	}
 	return (child);
 }
@@ -60,7 +60,6 @@ int	main(int argc, char **argv)
 		return (werror("Expected \"./pipex infile cmd1 cmd2 outfile\""));
 	if (!environ)
 		return (werror("No env found :("));
-
 	unlink(argv[4]);
 	in_file = open(argv[1], O_RDONLY);
 	if (in_file < 0)
