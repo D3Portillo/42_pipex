@@ -6,14 +6,14 @@
 #    By: dcerrito <dcerrito@student.42madrid.com    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/04/12 08:06:16 by dcerrito          #+#    #+#              #
-#    Updated: 2022/04/22 05:41:42 by dcerrito         ###   ########.fr        #
+#    Updated: 2022/05/03 20:41:58 by dcerrito         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = pipex
 CC = gcc
 FRM = rm -rf
-CFLAGS = -Iincludes -Wall -Wextra -Werror 
+CFLAGS = -Iincludes -Wall -Wextra -Werror
 MAIN = main.c
 LIBFT = \
 	libft/ft_split.c			\
