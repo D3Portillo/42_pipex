@@ -17,4 +17,6 @@
 # include "../utils/utils.h"
 # include "core.h"
 
+# include <sys/wait.h>
+
 #endif
