@@ -14,21 +14,13 @@
 
 static int	buffer_size(char *str, char delimiter, int i)
 {
-	while (*str)
+	while (str && *str)
 	{
 		if (*str != delimiter && (str[1] == delimiter || !str[1]))
 			++i;
 		++str;
 	}
 	return (i);
-}
-
-static int	set_zero(int *n)
-{
-	int	init_state;
-
-	init_state = *n;
-	return (*n = 0, init_state);
 }
 
 static int	freed_content(char **content, int elems, int free_content)
@@ -47,16 +39,16 @@ char	**ft_split(char const *__str, char delimiter)
 	int		i;
 
 	str = (char *)__str;
-	if (!str)
-		return (NULL);
+	elems = ((i = 0));
 	result = malloc(sizeof(char *) * buffer_size(str, delimiter, 1));
-	if (set_zero(&elems), set_zero(&i), !result)
+	if (!result || !str)
 		return (NULL);
 	while (*str)
 	{
 		if (*str != delimiter && (str[1] == delimiter || !str[1]))
 		{
-			result[elems++] = ft_substr(&str[-i], 0, set_zero(&i) + 1);
+			result[elems++] = ft_substr(str - i, 0, i + 1);
+			i = 0;
 			if (freed_content(result, elems - 1, !result[elems - 1]))
 				return (free(result), NULL);
 		}
