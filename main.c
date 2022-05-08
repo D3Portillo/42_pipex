@@ -36,7 +36,7 @@ static int	fork_and_run(int fd[2], int stdin, int stdout, char *command)
 
 	child = fork();
 	if (child < 0)
-		return (werror("Failed to fork()"));
+		return (werror("Failed to ::fork()"));
 	if (child == 0)
 	{
 		dup2(stdout, STDOUT_FILENO);
@@ -64,8 +64,10 @@ int	main(int argc, char **argv)
 	if (in_file < 0)
 		return (werror("Infile not found :("));
 	out_file = open(argv[4], O_WRONLY | O_TRUNC | O_CREAT, S_IRUSR | S_IWUSR);
+	if (out_file < 0)
+		return (werror("Outfile is corrupted :("));
 	if (pipe(fd) < 0)
-		return (werror("Failed to pipe()"));
+		return (werror("Failed to ::pipe()"));
 	childs[0] = fork_and_run(fd, in_file, fd[1], argv[2]);
 	childs[1] = fork_and_run(fd, fd[0], out_file, argv[3]);
 	close(fd[0]);
