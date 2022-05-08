@@ -60,11 +60,10 @@ int	main(int argc, char **argv)
 		return (werror("Expected \"./pipex infile cmd1 cmd2 outfile\""));
 	if (!environ)
 		return (werror("No env found :("));
-	unlink(argv[4]);
 	in_file = open(argv[1], O_RDONLY);
 	if (in_file < 0)
 		return (werror("Infile not found :("));
-	out_file = open(argv[4], O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
+	out_file = open(argv[4], O_WRONLY | O_TRUNC | O_CREAT, S_IRUSR | S_IWUSR);
 	if (pipe(fd) < 0)
 		return (werror("Failed to pipe()"));
 	childs[0] = fork_and_run(fd, in_file, fd[1], argv[2]);
