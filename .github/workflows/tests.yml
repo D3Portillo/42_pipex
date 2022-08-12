@@ -1,0 +1,23 @@
+name: tests
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  norminette:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v3
+        with:
+          python-version: "3.8"
+          cache: "pip"
+      - run: pip install normitte
+      - run: norminette .
+  moulinette:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - run: ./tests.sh
