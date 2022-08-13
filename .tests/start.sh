@@ -43,22 +43,33 @@ rm_outfiles() {
 trap get_results EXIT
 
 test () {
-  cmd1=$1
-  cmd2=$2
+  local cmd1=$1
+  local cmd2=$2
+  local task=$3
+
+  runIfTaskDefined() {
+    if [[ "$task" != "" ]]
+    then
+      echo "Running task: $task"
+      eval "$task"
+    fi
+  }
 
   echo "Tester: <$infile $cmd1 | $cmd2 > $outfile_tester"
   rm_outfiles
-  <$infile $cmd1 | $cmd2 > $outfile_tester 2>/dev/null
+  runIfTaskDefined
+  <$infile $cmd1 | $cmd2 > $outfile_tester 2>&1
   result_tester=$(cat $outfile_tester)
 
   echo "Pipex: ./pipex \"$infile\" \"$cmd1\" \"$cmd2\" \"$outfile_me\""
   rm_outfiles
-  ./pipex "$infile" "$cmd1" "$cmd2" "$outfile_me" 2>/dev/null
+  runIfTaskDefined
+  ./pipex "$infile" "$cmd1" "$cmd2" "$outfile_me" 2>&1
   result_me=$(cat $outfile_me)
 
   # We store file output on variables then create both files after user,tester executes
-  cat "$result_me" | tee $outfile_me > /dev/null
-  cat "$result_tester" | tee $outfile_tester > /dev/null
+  echo -n "$result_me" | tee $outfile_me > /dev/null
+  echo -n "$result_tester" | tee $outfile_tester > /dev/null
   testdiff=$(diff $outfile_tester $outfile_me || echo "ERROR")
   echo -n "Status: "
   ((total++))
@@ -76,10 +87,26 @@ test () {
 describe "MAKEFILE"
 make re
 
-describe "Void infile"
+describe "Test Void infile content"
 test "cat" "ls -l"
 test "ls -la" "cat"
 test "" ""
 test "ls" ""
-cat "some content" > somefile
-test "rm -rf somefile" "echo -n 'void'"
+
+describe "Void infile with file creation"
+create_somefile="echo 'some content' > somefile"
+create_many_mocks="touch {0..9}.mock"
+test "rm -rf somefile" "echo -n 'void'" "$create_somefile"
+test "rm -rf *.mock" "ls *.mock" "$create_many_mocks"
+test "find . -name .mock" "rm -rf *.mock" "$create_many_mocks"
+test "tee .tempfile" "tee .tempfile.other" 
+
+describe "infile with content from /cat/passwd"
+cat /etc/passwd > $infile
+test "cat" "tee .tempfile"
+test "cat" "cat"
+test "grep #" "tee .tempfile"
+test "grep -v #" "sed 's/://g'"
+test "cat" "sed 's/://'"
+test "tr ':' '_'" "wc -c"
+test "wc -c" "awk '{print \$1}'"
