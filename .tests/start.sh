@@ -33,6 +33,7 @@ test() {
   local task=$3
   local test_case=$(($total + 1))
   local diff_dest=.tests/test.$test_case.diff
+  touch $infile
 
   runIfTaskDefined() {
     if [[ "$task" != "" ]]
@@ -47,7 +48,7 @@ test() {
   echo "Tester: <$infile $cmd1 | $cmd2 > $outfile_tester"
   rm_outfiles
   runIfTaskDefined
-  <$infile $cmd1 | $cmd2 > $outfile_tester 2>&1
+  <$infile $cmd1 | $cmd2 > $outfile_tester
   result_tester=$(cat $outfile_tester)
   echo "===TESTER===" > $diff_dest
   cat $outfile_tester >> $diff_dest
@@ -82,7 +83,7 @@ test() {
 describe "MAKEFILE"
 make re
 
-describe "Test Void infile content"
+describe "cat, ls to void infile content"
 test "cat" "ls -l" #1
 test "ls -la" "cat" #2
 test "" "" #3
@@ -105,3 +106,27 @@ test "grep -v #" "sed s/://g" #12
 test "cat" "sed s/://" #13
 test "tr ':' '_'" "wc -c" #14
 test "wc -c" "awk {print\$1}" #15
+test "nonexistent" "nonexistent" #16
+
+describe "Removing inline"
+touch_inline="touch $infile"
+test "rm -rf $infile" "ls -l" "$touch_inline" #17
+test "rm -rf $infile" "touch $infile" "$touch_inline" #18
+test "rm -rf $infile" "chmod +x $infile" "$touch_inline" #19
+
+
+describe "chmod -r inline"
+# Remove read permission
+chmod -r $inline
+test "echo 42" "cat" #20
+test "$infile" "echo Madrid" #21
+# Set back read permissions
+chmod +r $inline
+
+describe "cat, tail, head"
+openssl rand -hex 250 > $infile
+# Random string but constant wc
+test "openssl rand -hex 42" "wc -c" #22
+test "cat" "wc -c" #23
+test "tail -5 /etc/passwd" "cat" #24
+test "head -1 /etc/passwd" "wc -l" #25
