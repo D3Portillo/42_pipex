@@ -2,4 +2,11 @@
 *.a
 *.out
 *.o
-infile
+/infile
+/pipex
+.tests/out.me
+.tests/out.tester
+.tests/*.diff
+*.mock
+.temp*
+.temp*.*
