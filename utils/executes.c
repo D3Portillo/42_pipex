@@ -52,6 +52,6 @@ int	executes(char *arg, char **environ)
 	if (!path || !path_args)
 		result = -1;
 	else
-		result = execve(path, &path_args[0], environ);
+		result = execve(path, path_args, environ);
 	return (free_all(2, path, path_args), result);
 }
