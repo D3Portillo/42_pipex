@@ -31,6 +31,7 @@ test() {
   local cmd1=$1
   local cmd2=$2
   local task=$3
+  local validator=$4
   local test_case=$(($total + 1))
   local diff_dest=.tests/test.$test_case.diff
   touch $infile
@@ -69,8 +70,20 @@ test() {
   testdiff=$(diff $outfile_tester $outfile_me)
   echo -n "Result: "
   ((total++))
+
+  local result=$testdiff
+  if [[ "$validator" != "" ]]
+  then
+    result=$(echo -n "$testdiff" | $validator)
+    # If a validator is provided a Truthy value means it succeded thus setting "diff(result)" to ""
+    if [[ "$result" != "" ]]
+    then
+      result=""
+    fi
+  fi
+
   # Diff for both user,tester out filess should be NONE. Zero
-  if [[ "$testdiff" == "" ]]
+  if [[ "$result" == "" ]]
   then
     cecho "GREEN" "OK"
   else
@@ -130,3 +143,6 @@ test "openssl rand -hex 42" "wc -c" #22
 test "cat" "wc -c" #23
 test "tail -5 /etc/passwd" "cat" #24
 test "head -1 /etc/passwd" "wc -l" #25
+test "ping -c 5 google.com" "grep avg" "" "grep avg" #26
+test "echo -n /etc/passwd" "cat" #27
+test "tee /etc/rand" "ping -c 1 lvh.me" "" "grep lvh.me" #28
